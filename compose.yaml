@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  app:
+    build:
+      context: ./app
+    container_name: app_container
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - db_network
+      - site_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4743/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  mysql:
+    build:
+      context: ./mysql
+    container_name: mysql_container
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - db_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    build:
+      context: ./nginx
+    container_name: nginx_container
+    depends_on:
+      app:
+        condition: service_healthy
+    ports:
+      - "5423:824"
+    networks:
+      - site_network
+
+networks:
+  db_network:
+  site_network:
+
+volumes:
+  db_data:

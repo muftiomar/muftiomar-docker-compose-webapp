@@ -1,0 +1,17 @@
+# Node.js
+node_modules/
+npm-debug.log
+
+# Docker
+*.log
+*.pid
+*.sock
+*.swp
+.db_data
+.env
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
